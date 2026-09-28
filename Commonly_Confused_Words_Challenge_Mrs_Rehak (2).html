@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commonly Confused Words Challenge - 6th Grade ELA</title>
+<style>
+  :root { --ink:#243047; --accent:#5b5bd6; --good:#16834b; --bad:#c43d3d; --card:#ffffff; --bg:#f3f5ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial, Helvetica, sans-serif; background:linear-gradient(135deg,#eef2ff,#fff7ed); color:var(--ink); min-height:100vh; }
+  .wrap { max-width:850px; margin:auto; padding:28px 18px 45px; }
+  .hero { background:var(--card); border-radius:24px; padding:28px; box-shadow:0 8px 30px rgba(36,48,71,.10); text-align:center; }
+  h1 { margin:0 0 8px; font-size:clamp(28px,5vw,44px); }
+  .subtitle { font-size:18px; margin:0; }
+  .teacher { margin-top:10px; font-weight:bold; color:var(--accent); }
+  .stats { display:flex; justify-content:space-between; gap:12px; margin:18px 0 10px; font-weight:bold; }
+  .progress { height:12px; background:#e5e7eb; border-radius:99px; overflow:hidden; }
+  .bar { height:100%; width:0; background:var(--accent); transition:.3s; }
+  .card { background:var(--card); border-radius:22px; padding:26px; margin-top:18px; box-shadow:0 8px 30px rgba(36,48,71,.10); }
+  .level { display:inline-block; background:#ececff; color:#4444a8; padding:7px 12px; border-radius:99px; font-size:14px; font-weight:bold; margin-bottom:15px; }
+  .question { font-size:25px; line-height:1.4; font-weight:bold; margin-bottom:22px; }
+  .choices { display:grid; gap:12px; }
+  button { font:inherit; }
+  .choice { width:100%; text-align:left; border:2px solid #dfe3ef; background:#fff; border-radius:14px; padding:15px 18px; cursor:pointer; font-weight:bold; transition:.15s; }
+  .choice:hover:not(:disabled) { transform:translateY(-1px); border-color:var(--accent); background:#f7f7ff; }
+  .choice:disabled { cursor:default; }
+  .choice.correct { background:#e8f7ef; border-color:var(--good); color:#116337; }
+  .choice.wrong { background:#fff0f0; border-color:var(--bad); color:#9d2c2c; }
+  .feedback { min-height:58px; margin-top:18px; font-size:17px; line-height:1.45; font-weight:bold; }
+  .next, .start, .restart { border:0; background:var(--accent); color:white; border-radius:13px; padding:13px 22px; font-weight:bold; cursor:pointer; }
+  .next:hover, .start:hover, .restart:hover { filter:brightness(.93); }
+  .hidden { display:none !important; }
+  .result { text-align:center; }
+  .scorebig { font-size:52px; font-weight:900; color:var(--accent); margin:8px 0; }
+  .badge { font-size:54px; }
+  .tip { background:#f7f8fc; border-radius:15px; padding:15px; text-align:left; margin:18px 0; }
+  .instructions { text-align:left; max-width:650px; margin:20px auto; line-height:1.6; }
+  .footer { text-align:center; font-size:13px; opacity:.65; margin-top:18px; }
+  @media(max-width:600px){ .card,.hero{padding:20px}.question{font-size:21px}.stats{font-size:14px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="startScreen" class="hero">
+    <div style="font-size:55px">🎮</div>
+    <h1>Commonly Confused Words Challenge</h1>
+    <p class="subtitle">6th Grade ELA Review Game</p>
+    <div class="teacher">Mrs. Rehak</div>
+    <div class="instructions">
+      <p><strong>Your mission:</strong> Choose the word that correctly completes each sentence.</p>
+      <ul>
+        <li>There / Their / They're</li>
+        <li>Its / It's</li>
+        <li>Affect / Effect</li>
+      </ul>
+      <p>You will get immediate feedback after every question. Try to beat your score!</p>
+    </div>
+    <button class="start" onclick="startGame()">START GAME 🚀</button>
+  </section>
+
+  <section id="gameScreen" class="hidden">
+    <div class="stats">
+      <span>Question <span id="qNum">1</span> of <span id="qTotal">15</span></span>
+      <span>Score: <span id="score">0</span></span>
+    </div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    <div class="card">
+      <div id="level" class="level"></div>
+      <div id="question" class="question"></div>
+      <div id="choices" class="choices"></div>
+      <div id="feedback" class="feedback" aria-live="polite"></div>
+      <button id="nextBtn" class="next hidden" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </section>
+
+  <section id="resultScreen" class="card result hidden">
+    <div class="badge" id="badge">🏆</div>
+    <h2>Game Complete!</h2>
+    <div class="scorebig"><span id="finalScore">0</span>/15</div>
+    <p id="finalMessage"></p>
+    <div class="tip">
+      <strong>Remember:</strong><br>
+      <b>their</b> = belongs to them &nbsp; | &nbsp; <b>there</b> = a place &nbsp; | &nbsp; <b>they're</b> = they are<br>
+      <b>its</b> = belongs to it &nbsp; | &nbsp; <b>it's</b> = it is<br>
+      <b>affect</b> = usually a verb (influence) &nbsp; | &nbsp; <b>effect</b> = usually a noun (result)
+    </div>
+    <button class="restart" onclick="restartGame()">PLAY AGAIN 🔄</button>
+  </section>
+
+  <div class="footer">6th Grade ELA • Commonly Confused Words</div>
+</div>
+
+<script>
+const questions = [
+  {level:"LEVEL 1 • THERE / THEIR / THEY'RE", q:"The students put ___ backpacks by the door.", a:["there","their","they're"], c:1, e:"<b>Their</b> shows ownership. The backpacks belong to the students."},
+  {level:"LEVEL 1 • THERE / THEIR / THEY'RE", q:"___ going to finish the project after lunch.", a:["Their","There","They're"], c:2, e:"<b>They're</b> is a contraction for <b>they are</b>."},
+  {level:"LEVEL 1 • THERE / THEIR / THEY'RE", q:"Please put your paper over ___.", a:["their","there","they're"], c:1, e:"<b>There</b> refers to a place."},
+  {level:"LEVEL 1 • THERE / THEIR / THEY'RE", q:"The players celebrated ___ victory after the game.", a:["there","their","they're"], c:1, e:"<b>Their</b> shows that the victory belongs to the players."},
+  {level:"LEVEL 1 • THERE / THEIR / THEY'RE", q:"Look over ___! The answer is on the board.", a:["their","they're","there"], c:2, e:"<b>There</b> points to a place."},
+
+  {level:"LEVEL 2 • ITS / IT'S", q:"The dog wagged ___ tail when it saw us.", a:["it's","its","its'"], c:1, e:"<b>Its</b> shows ownership. The tail belongs to the dog."},
+  {level:"LEVEL 2 • ITS / IT'S", q:"___ important to check your work.", a:["Its","It's","Its'"], c:1, e:"<b>It's</b> is a contraction for <b>it is</b>."},
+  {level:"LEVEL 2 • ITS / IT'S", q:"The school changed ___ schedule for Friday.", a:["it's","its","its'"], c:1, e:"<b>Its</b> shows ownership. The schedule belongs to the school."},
+  {level:"LEVEL 2 • ITS / IT'S", q:"___ going to be a great day!", a:["Its","It's","Its'"], c:1, e:"Try replacing the word with <b>it is</b>: It is going to be a great day."},
+  {level:"LEVEL 2 • ITS / IT'S", q:"The computer lost ___ connection.", a:["it's","its","its'"], c:1, e:"<b>Its</b> shows ownership. The connection belongs to the computer."},
+
+  {level:"LEVEL 3 • AFFECT / EFFECT", q:"Loud music can ___ your ability to concentrate.", a:["effect","affect","effects"], c:1, e:"<b>Affect</b> is usually a verb meaning to influence."},
+  {level:"LEVEL 3 • AFFECT / EFFECT", q:"The new rule had a positive ___ on the class.", a:["affect","effect","affects"], c:1, e:"<b>Effect</b> is usually a noun meaning a result."},
+  {level:"LEVEL 3 • AFFECT / EFFECT", q:"The rain may ___ our plans for the picnic.", a:["effect","affect","effects"], c:1, e:"The rain may <b>affect</b> (influence) our plans."},
+  {level:"LEVEL 3 • AFFECT / EFFECT", q:"One ___ of getting enough sleep is having more energy.", a:["affect","effect","affects"], c:1, e:"An <b>effect</b> is a result."},
+  {level:"FINAL CHALLENGE • MIXED", q:"___ going to bring ___ books over ___ when the bell rings.", a:["They're / their / there","Their / they're / there","They're / there / their"], c:0, e:"<b>They're</b> = they are; <b>their</b> = belongs to them; <b>there</b> = a place."}
+];
+
+let current = 0, score = 0, answered = false;
+
+function startGame() {
+  current = 0; score = 0;
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("gameScreen").classList.remove("hidden");
+  document.getElementById("qTotal").textContent = questions.length;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const x = questions[current];
+  document.getElementById("qNum").textContent = current + 1;
+  document.getElementById("score").textContent = score;
+  document.getElementById("bar").style.width = (current / questions.length * 100) + "%";
+  document.getElementById("level").textContent = x.level;
+  document.getElementById("question").textContent = x.q;
+  document.getElementById("feedback").innerHTML = "";
+  document.getElementById("nextBtn").classList.add("hidden");
+
+  const choices = document.getElementById("choices");
+  choices.innerHTML = "";
+  x.a.forEach((choice, index) => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.textContent = choice;
+    btn.onclick = () => answer(index, btn);
+    choices.appendChild(btn);
+  });
+}
+
+function answer(index, selected) {
+  if (answered) return;
+  answered = true;
+  const x = questions[current];
+  const buttons = [...document.querySelectorAll(".choice")];
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === x.c) btn.classList.add("correct");
+  });
+
+  const feedback = document.getElementById("feedback");
+  if (index === x.c) {
+    score++;
+    selected.classList.add("correct");
+    feedback.innerHTML = "✓ Correct! " + x.e;
+    feedback.style.color = "var(--good)";
+  } else {
+    selected.classList.add("wrong");
+    feedback.innerHTML = "✗ Not quite. " + x.e;
+    feedback.style.color = "var(--bad)";
+  }
+  document.getElementById("score").textContent = score;
+  document.getElementById("nextBtn").classList.remove("hidden");
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) renderQuestion();
+  else finishGame();
+}
+
+function finishGame() {
+  document.getElementById("gameScreen").classList.add("hidden");
+  document.getElementById("resultScreen").classList.remove("hidden");
+  document.getElementById("bar").style.width = "100%";
+  document.getElementById("finalScore").textContent = score;
+
+  const pct = Math.round(score / questions.length * 100);
+  let badge, message;
+  if (pct === 100) { badge="🏆"; message="Perfect score! You mastered these commonly confused words!"; }
+  else if (pct >= 87) { badge="🌟"; message="Excellent work! You have a strong understanding of these words."; }
+  else if (pct >= 73) { badge="👏"; message="Nice job! Review the ones you missed and try again."; }
+  else if (pct >= 60) { badge="💪"; message="Good effort! A little more practice will help these words stick."; }
+  else { badge="📚"; message="Keep practicing! Use the memory tips above and play again."; }
+  document.getElementById("badge").textContent = badge;
+  document.getElementById("finalMessage").textContent = message;
+}
+
+function restartGame() {
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("gameScreen").classList.remove("hidden");
+  current = 0; score = 0;
+  renderQuestion();
+}
+</script>
+</body>
+</html>
